@@ -2,9 +2,9 @@
 
 body {
   position: relative;
-  color: white;
+  color: #333333;
   height: 100vh;
-  background-color: #dddddd;
+  background-color: hsla(0, 0%, 97%, 1);
   font-family: Arial, Helvetica, Helvetica Neue, serif;
   overflow-y: hidden;
 }
@@ -14,7 +14,7 @@ h2 {
   font-size: 2.25rem;
   font-weight: bold;
   letter-spacing: -.025em;
-  color: #fff;
+  color: #333333;
 }
 
 p {
@@ -26,7 +26,7 @@ li {
 }
 
 a {
-  color: white;
+  color: #333333;
   opacity: .75;
   text-decoration: none;
 }

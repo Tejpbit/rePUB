@@ -268,13 +268,16 @@ const ReaderContainer = styled.div`
   display: flex;
   flex-flow: row;
   height: 100%;
-  width: 50em;
+  min-width: 50em;
 `;
 
 const ContentView = styled.div`
+  margin-left: 10em;
+  margin-down: 1em;
   background: white;
   color: black;
   width: 60em;
   height: 100%;
   position: relative;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 `;

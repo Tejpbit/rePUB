@@ -65,4 +65,5 @@ export default (HomePage as any) as React.StatelessComponent<
 
 export const Full = styled.div`
   height: 100%;
+  width: 100%;
 `;
