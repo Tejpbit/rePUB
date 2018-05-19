@@ -49,6 +49,11 @@ class ReaderView extends React.Component<ReaderProps, ReaderState> {
     console.log(id);
   };
 
+  onNewAnnotation = (location: string, word: string) => {
+    console.log(location);
+    console.log(word);
+  };
+
   updateAnnotations = (contents: any, view: any): void => {
     // const { annotations } = this.props;
     const annotations: Annotation[] = [
