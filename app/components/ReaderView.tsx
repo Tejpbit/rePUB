@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ReactReader, ReactReaderStyle } from "react-reader";
-import { Annotation } from "../backend";
+import backend, {Annotation, Collection} from "../backend";
 import { NewAnnotationView } from "./NewAnnotationView";
 
 import TextAnnotation from "./Text";
@@ -10,7 +10,8 @@ import TextAnnotation from "./Text";
 type ReaderState = {
   path: string;
   location: string;
-  collectionID?: string;
+  collectionID: string;
+  collection: Collection;
   currentId: string;
   x: number;
   y: number;
@@ -46,12 +47,23 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     path: "../Harry_Potter_and_the_Sorcerers_Stone-Rowling.epub",
     location: "epubcfi(/6/14[text6]!/4/4/1:0)", // epubcfi(/6/2[cover]!/4/1:0)",
     collectionID: getCollectionId(),
+    collection: { id: "", title: "Empty collection", annotations: [] },
     currentId: "",
     x: 0,
     y: 0,
     createNewAnnotation: false,
     newAnnotationProps: { location: "", word: "" }
   };
+
+  componentWillMount() {
+    backend.getCollection(this.state.collectionID)
+        .then((collection: Collection) => {
+          console.log("Setting state");
+          this.setState({
+              collection
+          })
+        })
+  }
 
   updateLocation = (epubcifi: string): void => {
     this.setState({ location: epubcifi });
@@ -78,8 +90,8 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   updateAnnotations = (contents: any, view: any): void => {
-    // const { annotations } = this.props;
-    const annotations: Annotation[] = [
+    const annotations = this.state.collection.annotations;
+    /*const annotations: Annotation[] = [
       {
         id: "1",
         type: "text",
@@ -89,7 +101,7 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
           end: ""
         }
       }
-    ];
+    ];*/
 
     const cfiBase: string = contents.cfiBase;
 
@@ -189,36 +201,46 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   render() {
+    // ReactReaderStyle;
+    ReactReaderStyle["annotation:hover"] = {
+      transform: "scale(1.1)"
+    };
+    ReactReaderStyle["inline"] = {
+      display: "inline"
+    };
+    ReactReaderStyle["height"] = "5em";
+
+
     const {
       path,
       location,
       collectionID,
+      collection,
       createNewAnnotation,
       newAnnotationProps,
       currentId,
       x,
       y
     } = this.state;
-    console.log(collectionID);
+    console.log(collectionID, collection);
     return (
       <ReaderContainer>
         <div>
           {currentId.length > 0 &&
             <TextAnnotation id={currentId} x={x} y={y} />}
-          <Link to="/">
+        <Link to="/">
             <i className="fa fa-arrow-left fa-3x" />
-          </Link>
-          <ContentView>
-            <ReactReader
-              url={path}
-              location={location}
-              styles={ReactReaderStyle}
-              locationChanged={(epubcifi: string) =>
-                this.updateLocation(epubcifi)}
-              getRendition={(rendition: any) => this.renditionLoaded(rendition)}
-            />
-          </ContentView>
-        </div>
+        </Link>
+        <ContentView>
+          <ReactReader
+            url={path}
+            location={location}
+            styles={ReactReaderStyle}
+            locationChanged={(epubcifi: string) => this.updateLocation(epubcifi)}
+            getRendition={(rendition: any) => this.renditionLoaded(rendition)}
+          />
+        </ContentView>
+      </div>
         {createNewAnnotation
           ? <NewAnnotationView
               location={newAnnotationProps.location}
