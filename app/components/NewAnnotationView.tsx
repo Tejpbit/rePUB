@@ -8,6 +8,7 @@ type State = {
 type Props = {
   location: string;
   word: string;
+  onCreateAnnotation: (location: string, content: string) => void;
 };
 
 export class NewAnnotationView extends React.Component<Props, State> {
@@ -27,13 +28,17 @@ export class NewAnnotationView extends React.Component<Props, State> {
     console.log(location);
     console.log(content);
     console.log(word);
+    this.setState({ content: "" });
+    this.props.onCreateAnnotation(location, content);
   };
 
   render() {
     const { location, word } = this.props;
     const { content } = this.state;
+
+    const opacity = word === "" ? 0 : 1;
     return (
-      <Container>
+      <Container opacity={opacity}>
         <TextField>{word}</TextField>
         <InputField onChange={this.handleAnnotationEdit} value={content} />
         <SaveButton
@@ -48,14 +53,21 @@ export class NewAnnotationView extends React.Component<Props, State> {
 
 export default NewAnnotationView;
 
+type ContainerProps = {
+  opacity: number;
+};
+
 const Container = styled.div`
   height: 16em;
   background: #ffffff;
   margin: 1em;
-  border-radius: 2em;
+  border-radius: 2px;
 
   display: flex;
   flex-flow: column;
+  transition: opacity 500ms;
+
+  opacity: ${(props: ContainerProps) => props.opacity};
 `;
 
 const InputField = styled.textarea`

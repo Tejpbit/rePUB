@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ReactReader, ReactReaderStyle } from "react-reader";
-import backend, {Annotation, Collection} from "../backend";
+import backend, { Annotation, Collection } from "../backend";
 import { NewAnnotationView } from "./NewAnnotationView";
 
 import TextAnnotation from "./Text";
@@ -15,7 +15,6 @@ type ReaderState = {
   currentId: string;
   x: number;
   y: number;
-  createNewAnnotation: boolean;
   newAnnotationProps: NewAnnotationProps;
 };
 
@@ -51,18 +50,18 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     currentId: "",
     x: 0,
     y: 0,
-    createNewAnnotation: false,
     newAnnotationProps: { location: "", word: "" }
   };
 
   componentWillMount() {
-    backend.getCollection(this.state.collectionID)
-        .then((collection: Collection) => {
-          console.log("Setting state");
-          this.setState({
-              collection
-          })
-        })
+    backend
+      .getCollection(this.state.collectionID)
+      .then((collection: Collection) => {
+        console.log("Setting state");
+        this.setState({
+          collection
+        });
+      });
   }
 
   updateLocation = (epubcifi: string): void => {
@@ -74,9 +73,32 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   onHover = (id: string, event: PointerEvent): void => {
-    let text: string = this.state.collection.annotations[parseInt(id, 10) - 1].resource;
-    this.setState({ currentId: text, x: event.pageX + 55, y: event.pageY + 70 });
+    let text: string = this.state.collection.annotations[parseInt(id, 10) - 1]
+      .resource;
+    this.setState({
+      currentId: text,
+      x: event.pageX + 55,
+      y: event.pageY + 70
+    });
     console.log(text);
+  };
+
+  onCreateAnnotation = (location: string, content: string) => {
+    const { collection } = this.state;
+
+    const newAnnotation = {
+      id: collection.annotations.length + 1 + "",
+      type: "text",
+      resource: content,
+      location: {
+        start: location,
+        end: ""
+      }
+    };
+    collection.annotations.push(newAnnotation);
+    this.setState({
+      newAnnotationProps: { location: "", word: "" }
+    });
   };
 
   onNewAnnotation = (wordCfi: string, word: string) => {
@@ -85,8 +107,7 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
       word
     };
     this.setState({
-      newAnnotationProps: newAnnotationProps,
-      createNewAnnotation: true
+      newAnnotationProps: newAnnotationProps
     });
   };
 
@@ -202,22 +223,11 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   render() {
-    // ReactReaderStyle;
-    ReactReaderStyle["annotation:hover"] = {
-      transform: "scale(1.1)"
-    };
-    ReactReaderStyle["inline"] = {
-      display: "inline"
-    };
-    ReactReaderStyle["height"] = "5em";
-
-
     const {
       path,
       location,
       collectionID,
       collection,
-      createNewAnnotation,
       newAnnotationProps,
       currentId,
       x,
@@ -228,26 +238,26 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
       <ReaderContainer>
         <div>
           {currentId.length > 0 &&
-            <TextAnnotation content={currentId} x={x} y={y}/>}
-        <Link to="/">
+            <TextAnnotation content={currentId} x={x} y={y} />}
+          <Link to="/">
             <i className="fa fa-arrow-left fa-3x" />
-        </Link>
-        <ContentView>
-          <ReactReader
-            url={path}
-            location={location}
-            styles={ReactReaderStyle}
-            locationChanged={(epubcifi: string) => this.updateLocation(epubcifi)}
-            getRendition={(rendition: any) => this.renditionLoaded(rendition)}
-          />
-        </ContentView>
-      </div>
-        {createNewAnnotation
-          ? <NewAnnotationView
-              location={newAnnotationProps.location}
-              word={newAnnotationProps.word}
+          </Link>
+          <ContentView>
+            <ReactReader
+              url={path}
+              location={location}
+              styles={ReactReaderStyle}
+              locationChanged={(epubcifi: string) =>
+                this.updateLocation(epubcifi)}
+              getRendition={(rendition: any) => this.renditionLoaded(rendition)}
             />
-          : ""}
+          </ContentView>
+        </div>
+        <NewAnnotationView
+          location={newAnnotationProps.location}
+          word={newAnnotationProps.word}
+          onCreateAnnotation={this.onCreateAnnotation}
+        />
       </ReaderContainer>
     );
   }
