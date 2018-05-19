@@ -23,7 +23,7 @@ function getCollectionId(): any {
   }
 
   return window.location.href.substr(lastSlash+1);
-};
+}
 
 type ReaderProps = {
   annotations: Annotation[];
@@ -60,6 +60,11 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
     console.log(id);
   };
 
+  onNewAnnotation = (wordCfi: string, word: string) => {
+    console.log(wordCfi);
+    console.log(word);
+  };
+
   updateAnnotations = (contents: any, view: any): void => {
     // const { annotations } = this.props;
     const annotations: Annotation[] = [
@@ -76,7 +81,7 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
 
     const cfiBase: string = contents.cfiBase;
 
-    this.divvifyContent(contents.content);
+    this.divvifyContent(contents.content, cfiBase);
 
     for (let annotation of annotations) {
       const epubcifiParse = this.parseEpubcfiToData(
@@ -97,8 +102,10 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
     content: Node
   ): EpubcifiParse | null => {
     if (epubcifi.includes(cfiBase)) {
-      const loc: string = epubcifi.replace(cfiBase + "!", "");
-      const indicies: string[] = loc.split("/");
+      const loc: string = epubcifi.replace(cfiBase, "");
+      const indicies: string[] = loc
+        .split("/")
+        .filter(s => s !== "" && s !== "!");
 
       let currentNode: Node = content;
       for (let i = 0; i < indicies.length - 1; i++) {
@@ -135,27 +142,31 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
     annotationChild.onpointerleave = () => {this.setState({currentId: "", x: 0, y: 0})};
   };
 
-  divvifyContent = (node: Node): void => {
+  divvifyContent = (node: Node, cfi: string): void => {
     for (let i = 0; i < node.childNodes.length; i++) {
       const childNode = node.childNodes[i];
+      const newCfi = cfi + "/" + i;
       if (childNode.nodeName === "#text") {
-        this.divvifyText(childNode, node);
+        this.divvifyText(childNode, node, newCfi);
       } else {
-        this.divvifyContent(childNode);
+        this.divvifyContent(childNode, newCfi);
       }
     }
   };
 
-  divvifyText = (node: Node, parent: Node): void => {
+  divvifyText = (node: Node, parent: Node, cfi: string): void => {
     let newNode: Node = document.createElement("div");
     const data = node.nodeValue;
     if (data === null) {
       return;
     }
     const words = data.split(" ");
-    for (let word of words) {
+    for (let i = 0; i < words.length; i++) {
+      const wordCfi = cfi + "/" + i;
+      const word = words[i];
       let childNode: Element = document.createElement("div");
-      childNode.setAttribute("style", "display: inline");
+      childNode.setAttribute("style", "display: inline; cursor: pointer;");
+      childNode.onpointerdown = () => this.onNewAnnotation(wordCfi, word);
       childNode.innerHTML = word + " ";
       newNode.appendChild(childNode);
     }
@@ -164,29 +175,20 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
   };
 
   render() {
-    // ReactReaderStyle;
-    ReactReaderStyle["annotation:hover"] = {
-      transform: "scale(1.1)"
-    };
-    ReactReaderStyle["inline"] = {
-      display: "inline"
-    };
-    ReactReaderStyle["height"] = "5em";
-
-    console.log(collectionID);
-    const { path, location, collectionID, currentId, x, y} = this.state;
-    return (
+    const { path, location, currentId, x, y} = this.state;
+      return (
       <Full>
           {currentId.length > 0 && <TextAnnotation id = {currentId } x = {x} y = {y}/>}
         <Link to="/">
-            <i className="fa fa-arrow-left fa-3x" />
+          <i className="fa fa-arrow-left fa-3x" />
         </Link>
         <ContentView>
           <ReactReader
             url={path}
             location={location}
             styles={ReactReaderStyle}
-            locationChanged={(epubcifi: string) => this.updateLocation(epubcifi)}
+            locationChanged={(epubcifi: string) =>
+              this.updateLocation(epubcifi)}
             getRendition={(rendition: any) => this.renditionLoaded(rendition)}
           />
         </ContentView>
