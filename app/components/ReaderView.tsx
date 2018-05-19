@@ -2,6 +2,8 @@ import * as React from "react";
 
 const fs = require("fs");
 
+import styled from 'styled-components';
+
 type State = {
   content: string;
 }
@@ -26,6 +28,13 @@ export default class ReaderView extends React.Component {
   render() {
     const { content } = this.state;
 
-    return <div>helo{content}</div>;
+    return <ContentView>{content}</ContentView>;
   }
 }
+
+const ContentView = styled.div`
+  background: white;
+  color: black;
+  width: 30em;
+  height
+`;
