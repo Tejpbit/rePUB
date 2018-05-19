@@ -2,13 +2,8 @@ import * as React from "react";
 
 import styled from "styled-components";
 
-type State = {
-    id: String;
-    content: string;
-};
-
 type Props = {
-    id: string;
+    content: string;
     x: number;
     y: number;
 }
@@ -19,27 +14,9 @@ type TextStyleProps = {
 }
 
 export default class Text extends React.Component<Props, any> {
-    state: State = {
-        id: "",
-        content: ""
-    };
-
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            id: props.id,
-            content: "Interesting information goes here."
-        }
-    }
-
-    componentDidMount() {
-
-    }
-
 
   render() {
-    const { content } = this.state;
-    const {x, y} = this.props;
+    const {content, x, y} = this.props;
 
     return (
         <TextStyle x = {x} y = {y}>

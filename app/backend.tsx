@@ -24,9 +24,8 @@ class Backend {
     };
 
     getCollection = (uuid: string) => {
-        return this.fetchJson(`/collections/$uuid`)
+        return this.fetchJson(`/collections/${uuid}`)
     };
-
 
     myfetch = (uri: string, options = {}) => fetch(conf.backend_address + uri, options);
 

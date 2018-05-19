@@ -74,8 +74,9 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   onHover = (id: string, event: PointerEvent): void => {
-    this.setState({ currentId: id, x: event.pageX + 55, y: event.pageY + 70 });
-    console.log(id);
+    let text: string = this.state.collection.annotations[parseInt(id, 10) - 1].resource;
+    this.setState({ currentId: text, x: event.pageX + 55, y: event.pageY + 70 });
+    console.log(text);
   };
 
   onNewAnnotation = (wordCfi: string, word: string) => {
@@ -227,7 +228,7 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
       <ReaderContainer>
         <div>
           {currentId.length > 0 &&
-            <TextAnnotation id={currentId} x={x} y={y} />}
+            <TextAnnotation content={currentId} x={x} y={y}/>}
         <Link to="/">
             <i className="fa fa-arrow-left fa-3x" />
         </Link>
