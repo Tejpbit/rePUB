@@ -3,14 +3,14 @@ import conf from "./config.js";
 //import { toast } from "react-toastify";
 
 export type Collection = {
-    id: String;
+    id: string;
     annotations: Annotation[];
 }
 
 export type Annotation = {
-    id: String;
-    type: String;
-    resource: String;
+    id: string;
+    type: string;
+    resource: string;
     location: {
         start: EpubCFI;
         end: EpubCFI;
@@ -31,14 +31,14 @@ export default class Backend {
         })
     };
 
-    getCollection = (uuid: String) => {
+    getCollection = (uuid: string) => {
         return this.fetchJson(`/collections/$uuid`)
     };
 
 
-    myfetch = (uri: String, options = {}) => fetch(conf.backend_address + uri, options);
+    myfetch = (uri: string, options = {}) => fetch(conf.backend_address + uri, options);
 
-    fetchJson = (uri: String) =>
+    fetchJson = (uri: string) =>
         this.myfetch(uri).then(this.checkStatus).then(resp => resp.json());
 
     checkStatus = (response: any) => {
