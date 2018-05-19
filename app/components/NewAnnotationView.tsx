@@ -39,8 +39,12 @@ export class NewAnnotationView extends React.Component<Props, State> {
     const opacity = word === "" ? 0 : 1;
     return (
       <Container opacity={opacity}>
-        <TextField>{word}</TextField>
-        <InputField onChange={this.handleAnnotationEdit} value={content} />
+        <TextField>{"Annotate " + word}</TextField>
+        <InputField
+          onKeyPress={this.handleAnnotationEdit}
+          onChange={this.handleAnnotationEdit}
+          value={content}
+        />
         <SaveButton
           onClick={() => this.handleSaveAnnotation(location, content, word)}
         >
@@ -62,12 +66,14 @@ const Container = styled.div`
   background: #ffffff;
   margin: 1em;
   border-radius: 2px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 
   display: flex;
   flex-flow: column;
   transition: opacity 500ms;
 
   opacity: ${(props: ContainerProps) => props.opacity};
+  margin-top: 3em;
 `;
 
 const InputField = styled.textarea`
@@ -86,6 +92,7 @@ const TextField = styled.div`
   color: #333333;
   padding-top: 0.5em;
   padding-left: 1em;
+  margin-bottom: 0.4em;
 `;
 
 const SaveButton = styled.div`
@@ -95,4 +102,6 @@ const SaveButton = styled.div`
   margin: 1em;
   padding: 0.5em;
   cursor: pointer;
+  font-weight: 800;
+  color: #ffffff;
 `;

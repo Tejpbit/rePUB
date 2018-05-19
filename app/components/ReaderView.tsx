@@ -5,14 +5,14 @@ import { ReactReader, ReactReaderStyle } from "react-reader";
 import backend, { Annotation, Collection } from "../backend";
 import { NewAnnotationView } from "./NewAnnotationView";
 
-import TextAnnotation from "./Text";
+import AnnotationView from "./AnnotationView";
 
 type ReaderState = {
   path: string;
   location: string;
   collectionID: string;
   collection: Collection;
-  currentId: string;
+  currentAnnotation?: Annotation;
   x: number;
   y: number;
   newAnnotationProps: NewAnnotationProps;
@@ -48,7 +48,7 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     location: "epubcfi(/6/14[text6]!/4/4/1:0)", // epubcfi(/6/2[cover]!/4/1:0)",
     collectionID: getCollectionId(),
     collection: { id: "", title: "Empty collection", annotations: [] },
-    currentId: "",
+    currentAnnotation: undefined,
     x: 0,
     y: 0,
     newAnnotationProps: { location: "", word: "" },
@@ -74,10 +74,9 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   onHover = (id: string, event: PointerEvent): void => {
-    let text: string = this.state.collection.annotations[parseInt(id, 10) - 1]
-      .resource;
+    let annotation: Annotation = this.state.collection.annotations[parseInt(id, 10) - 1]
     this.setState({
-      currentId: text,
+      currentAnnotation: annotation,
       x: event.pageX + 55,
       y: event.pageY + 70
     });
@@ -175,11 +174,11 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     const annotationChild: Element = node.childNodes[wordIndex] as Element;
     annotationChild.setAttribute(
       "style",
-      "display: inline; background: #dccccc; cursor: pointer;"
+      "display: inline; border-radius: 2px; box-shadow: inset 0px 0px 3px 0 rgba(0, 0, 0, 0.5); padding-left: 6px; margin-right: 5px;"
     );
     annotationChild.onpointerenter = (event: any) => this.onHover(id, event);
     annotationChild.onpointerleave = () => {
-      this.setState({ currentId: "", x: 0, y: 0 });
+      this.setState({ currentAnnotation: undefined, x: 0, y: 0 });
     };
   };
 
@@ -220,15 +219,15 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
       path,
       location,
       newAnnotationProps,
-      currentId,
+      currentAnnotation,
       x,
       y
     } = this.state;
     return (
       <ReaderContainer>
         <div>
-          {currentId.length > 0 &&
-            <TextAnnotation content={currentId} x={x} y={y} />}
+          {currentAnnotation != undefined &&
+            <AnnotationView x={x} y={y} annotation={currentAnnotation} />}
           <Link to="/">
             <i className="fa fa-arrow-left fa-3x" />
           </Link>
@@ -259,13 +258,16 @@ const ReaderContainer = styled.div`
   display: flex;
   flex-flow: row;
   height: 100%;
-  width: 50em;
+  min-width: 50em;
 `;
 
 const ContentView = styled.div`
+  margin-left: 10em;
+  margin-down: 1em;
   background: white;
   color: black;
   width: 60em;
   height: 100%;
   position: relative;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 `;
