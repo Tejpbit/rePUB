@@ -1,9 +1,9 @@
-import { updateCollections } from "./actions/collections";
-import conf from "./config.js";
+import conf from "./config";
 //import { toast } from "react-toastify";
 
 export type Collection = {
     id: string;
+    title: string;
     annotations: Annotation[];
 }
 
@@ -21,14 +21,10 @@ export type EpubCFI = {
 
 }
 
-export default class Backend {
+class Backend {
 
     getAllCollections = () => {
-        return this.fetchJson("/collections")
-            .then((resp: Collection[]) => {
-                updateCollections(resp);
-
-        })
+        return this.fetchJson("/collections");
     };
 
     getCollection = (uuid: string) => {
@@ -51,3 +47,5 @@ export default class Backend {
         }
     };
 }
+
+export default new Backend();

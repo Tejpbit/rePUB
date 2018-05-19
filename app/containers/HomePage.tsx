@@ -1,14 +1,37 @@
 import * as React from "react";
-import { RouteComponentProps } from "react-router";
+import {RouteComponentProps} from "react-router";
 import styled from "styled-components";
+import backend, {Collection} from '../backend';
 
 import Home from "../components/Home";
 
-export class HomePage extends React.Component<RouteComponentProps<any>, void> {
+type State = {
+  collections: Collection[]
+}
+
+export class HomePage extends React.Component<RouteComponentProps<any>, any> {
+
+  state: State = {
+    collections: []
+  };
+
+  componentWillMount() {
+    backend.getAllCollections().then((collections: Collection[]) => {
+      this.setState({
+          collections
+      })
+    });
+  }
+
+
+
   render() {
+    const {collections} = this.state;
+    console.log("plz collections", collections);
     return (
       <Full>
-        <Home />
+        <Home collections={collections} />
+
       </Full>
     );
   }

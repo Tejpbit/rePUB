@@ -1,5 +1,5 @@
 const config = {
-    backend_address: "localhost:5000",
+    backend_address: "http://localhost:5000",
 };
 
 export default config;
