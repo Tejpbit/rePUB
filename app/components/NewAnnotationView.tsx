@@ -39,7 +39,7 @@ export class NewAnnotationView extends React.Component<Props, State> {
     const opacity = word === "" ? 0 : 1;
     return (
       <Container opacity={opacity}>
-        <TextField>{"Annotate " + word}</TextField>
+        <TextField>{"Annotate"} <Cursive>{word}</Cursive></TextField>
         <InputField
           onKeyPress={this.handleAnnotationEdit}
           onChange={this.handleAnnotationEdit}
@@ -48,7 +48,7 @@ export class NewAnnotationView extends React.Component<Props, State> {
         <SaveButton
           onClick={() => this.handleSaveAnnotation(location, content, word)}
         >
-          {"Save the annotation"}
+          {"Save annotation"}
         </SaveButton>
       </Container>
     );
@@ -99,9 +99,18 @@ const SaveButton = styled.div`
   height: 1em;
   border-radius: 1px;
   background: #09ac09;
-  margin: 1em;
+  margin: 0.4em;
   padding: 0.5em;
   cursor: pointer;
   font-weight: 800;
   color: #ffffff;
+
+  display: flex;
+  justify-content: center;
+`;
+
+const Cursive = styled.div`
+  font-family: Lato;
+  font-style: italic;
+  display: inline;
 `;
