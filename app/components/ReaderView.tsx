@@ -8,13 +8,26 @@ import {Full} from "../containers/HomePage";
 type State = {
   path: string;
   location: string;
+  collectionID?: string;
+};
+
+function getCollectionId(): any {
+  var lastSlash = window.location.href.lastIndexOf('/');
+  if (lastSlash == -1) {
+    return null
+  }
+
+  return window.location.href.substr(lastSlash+1);
 };
 
 export default class ReaderView extends React.Component {
   state: State = {
     path: "../Harry_Potter_and_the_Sorcerers_Stone-Rowling.epub",
-    location: "epubcfi(/6/2[cover]!/4/1:0)"
+    location: "epubcfi(/6/2[cover]!/4/1:0)",
+    collectionID: getCollectionId()
   };
+
+
 
   updateLocation = (epubcifi: string): void => {
     this.setState({ location: epubcifi });
@@ -29,8 +42,8 @@ export default class ReaderView extends React.Component {
   };
 
   render() {
-    const { path, location } = this.state;
-
+    const { path, location, collectionID } = this.state;
+    console.log(collectionID);
     return (
       <Full>
         <Link to="/">
