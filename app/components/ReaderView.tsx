@@ -51,6 +51,11 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
     console.log(id);
   };
 
+  onNewAnnotation = (wordCfi: string, word: string) => {
+    console.log(wordCfi);
+    console.log(word);
+  };
+
   updateAnnotations = (contents: any, view: any): void => {
     // const { annotations } = this.props;
     const annotations: Annotation[] = [
