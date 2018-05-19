@@ -74,11 +74,15 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   onHover = (id: string, event: PointerEvent): void => {
-    let annotation: Annotation = this.state.collection.annotations[parseInt(id, 10) - 1]
+    let annotation: Annotation = this.state.collection.annotations[
+      parseInt(id, 10) - 1
+    ];
+    const xOffest = 230;
+    const yOffset = 90;
     this.setState({
       currentAnnotation: annotation,
-      x: event.pageX + 55,
-      y: event.pageY + 70
+      x: event.pageX + xOffest,
+      y: event.pageY + yOffset
     });
   };
 

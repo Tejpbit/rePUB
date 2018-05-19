@@ -1,68 +1,52 @@
 import * as React from "react";
 
 import styled from "styled-components";
-import {Annotation} from "../backend";
+import { Annotation } from "../backend";
 
 type Props = {
     x: number;
     y: number;
     annotation: Annotation;
-}
+};
 
 type TextStyleProps = {
     x: number;
     y: number;
-}
+};
 
 export default class AnnotationView extends React.Component<Props, any> {
-
-    renderContentType = (annotation: Annotation) =>  {
+    renderContentType = (annotation: Annotation) => {
         switch (annotation.type) {
-
-            case "image": return <img src={annotation.resource} width="300px" />;
-            default: return <p>{annotation.resource}</p>;
-
+            case "image":
+                return <img src={annotation.resource} width="300px" />;
+            default:
+                return annotation.resource;
         }
     };
 
-  render() {
-    const {x, y, annotation} = this.props;
-    return (
-        <TextStyle x = {x} y = {y}>
-            {this.renderContentType(annotation)}
-        </TextStyle>
-    );
-  }
+    render() {
+        const { x, y, annotation } = this.props;
+        return (
+            <TextStyle x={x} y={y}>
+                {this.renderContentType(annotation)}
+            </TextStyle>
+        );
+    }
 }
-
-
 
 const TextStyle = styled.div`
     position: absolute;
-    color: black;
+    color: white;
     z-index: 3;
-    margin-left: 20px;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-radius: 12px;
-    box-shadow: 4px 4px 5px 0px rgba(50, 50, 50, 0.75);
-    background: #e3f4e3;
+    padding: 3px;
+    border-radius: 2px;
+    margin: 4px;
+    line-height: 1.2em;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    background: hsla(0, 0%, 15%, 0.85);
     left:  ${(props: TextStyleProps) => props.x}px;
-    top: ${(props: TextStyleProps)=> props.y}px;
-
-    &:after {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 50%;
-	width: 0;
-	height: 0;
-	border: 20px solid transparent;
-	border-right-color: #e3f4e3;
-	border-left: 0;
-	border-top: 0;
-	margin-top: -10px;
-	margin-left: -20px;
-	
-}
+    top: ${(props: TextStyleProps) => props.y}px;
+    font-family: Lato;
+    font-size: 16px;
+    transition: all 500ms;
 `;
