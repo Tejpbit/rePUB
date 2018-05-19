@@ -37,7 +37,7 @@ export default class Home extends React.Component<Props> {
       <ContainerDiv>
         <CenterDiv>
           <Title>rePUB</Title>
-          <h2>Your collections</h2>
+          <SubTitle>Your collections</SubTitle>
           <CollectionsList>
             {collections.map(this.renderCollection)}
           </CollectionsList>
@@ -77,4 +77,13 @@ const CollectionsList = styled.div`
     margin-left: 1em;
     display: flex;
     flex-direction: column;
+`;
+
+const SubTitle = styled.h2`
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: bold;
+    letter-spacing: -.025em;
+    color: #333333;
+    text-align: center;
 `;
