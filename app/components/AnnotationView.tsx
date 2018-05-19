@@ -42,6 +42,7 @@ const TextStyle = styled.div`
     border-radius: 2px;
     margin: 4px;
     line-height: 1.2em;
+    max-width: 22em;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
     background: hsla(0, 0%, 15%, 0.85);
     left:  ${(props: TextStyleProps) => props.x}px;
