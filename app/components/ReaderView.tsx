@@ -16,6 +16,7 @@ type ReaderState = {
   x: number;
   y: number;
   newAnnotationProps: NewAnnotationProps;
+  bookContents: any;
 };
 
 type NewAnnotationProps = {
@@ -50,14 +51,14 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     currentId: "",
     x: 0,
     y: 0,
-    newAnnotationProps: { location: "", word: "" }
+    newAnnotationProps: { location: "", word: "" },
+    bookContents: null
   };
 
   componentWillMount() {
     backend
       .getCollection(this.state.collectionID)
       .then((collection: Collection) => {
-        console.log("Setting state");
         this.setState({
           collection
         });
@@ -69,7 +70,7 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   renditionLoaded = (rendition: any): void => {
-    rendition.hooks.content.register(this.updateAnnotations);
+    rendition.hooks.content.register((content: any, view: any) => this.updateAnnotations(content, view, true));
   };
 
   onHover = (id: string, event: PointerEvent): void => {
@@ -80,7 +81,6 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
       x: event.pageX + 55,
       y: event.pageY + 70
     });
-    console.log(text);
   };
 
   onCreateAnnotation = (location: string, content: string) => {
@@ -99,6 +99,7 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     this.setState({
       newAnnotationProps: { location: "", word: "" }
     });
+    this.updateAnnotations(this.state.bookContents, null, false);
   };
 
   onNewAnnotation = (wordCfi: string, word: string) => {
@@ -111,34 +112,26 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     });
   };
 
-  updateAnnotations = (contents: any, view: any): void => {
+  updateAnnotations = (contents: any, view: any, contentChanged: boolean): void => {
     const annotations = this.state.collection.annotations;
-    /*const annotations: Annotation[] = [
-      {
-        id: "1",
-        type: "text",
-        resource: "",
-        location: {
-          start: "/6/14[text6]!/9/1/4",
-          end: ""
-        }
-      }
-    ];*/
-
     const cfiBase: string = contents.cfiBase;
 
-    this.divvifyContent(contents.content, cfiBase);
+    if(contentChanged) {
+        this.divvifyContent(contents.content, cfiBase);
+        this.setState({bookContents: contents});
+    }
 
     for (let annotation of annotations) {
-      const epubcifiParse = this.parseEpubcfiToData(
+
+        const epubcifiParse = this.parseEpubcfiToData(
         cfiBase,
         annotation.location.start,
         contents.content
       );
-      if (epubcifiParse === null) {
-        continue;
-      }
-      this.createAnnotation(epubcifiParse, annotation.id);
+        if (epubcifiParse === null) {
+            continue;
+        }
+        this.createAnnotation(epubcifiParse, annotation.id);
     }
   };
 
@@ -226,14 +219,11 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     const {
       path,
       location,
-      collectionID,
-      collection,
       newAnnotationProps,
       currentId,
       x,
       y
     } = this.state;
-    console.log(collectionID, collection);
     return (
       <ReaderContainer>
         <div>
