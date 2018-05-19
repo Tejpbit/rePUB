@@ -153,7 +153,7 @@ class ReaderView extends React.Component<ReaderProps, ReaderState> {
       const wordCfi = cfi + "/" + i;
       const word = words[i];
       let childNode: Element = document.createElement("div");
-      childNode.setAttribute("style", "display: inline; cusror: pointer;");
+      childNode.setAttribute("style", "display: inline; cursor: pointer;");
       childNode.onpointerdown = () => this.onNewAnnotation(wordCfi, word);
       childNode.innerHTML = word + " ";
       newNode.appendChild(childNode);
