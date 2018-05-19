@@ -5,14 +5,14 @@ import { ReactReader, ReactReaderStyle } from "react-reader";
 import backend, { Annotation, Collection } from "../backend";
 import { NewAnnotationView } from "./NewAnnotationView";
 
-import TextAnnotation from "./Text";
+import AnnotationView from "./AnnotationView";
 
 type ReaderState = {
   path: string;
   location: string;
   collectionID: string;
   collection: Collection;
-  currentId: string;
+  currentAnnotation?: Annotation;
   x: number;
   y: number;
   newAnnotationProps: NewAnnotationProps;
@@ -47,7 +47,7 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     location: "epubcfi(/6/14[text6]!/4/4/1:0)", // epubcfi(/6/2[cover]!/4/1:0)",
     collectionID: getCollectionId(),
     collection: { id: "", title: "Empty collection", annotations: [] },
-    currentId: "",
+    currentAnnotation: undefined,
     x: 0,
     y: 0,
     newAnnotationProps: { location: "", word: "" }
@@ -73,14 +73,12 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   };
 
   onHover = (id: string, event: PointerEvent): void => {
-    let text: string = this.state.collection.annotations[parseInt(id, 10) - 1]
-      .resource;
+    let annotation: Annotation = this.state.collection.annotations[parseInt(id, 10) - 1]
     this.setState({
-      currentId: text,
+      currentAnnotation: annotation,
       x: event.pageX + 55,
       y: event.pageY + 70
     });
-    console.log(text);
   };
 
   onCreateAnnotation = (location: string, content: string) => {
@@ -186,7 +184,7 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
     );
     annotationChild.onpointerenter = (event: any) => this.onHover(id, event);
     annotationChild.onpointerleave = () => {
-      this.setState({ currentId: "", x: 0, y: 0 });
+      this.setState({ currentAnnotation: undefined, x: 0, y: 0 });
     };
   };
 
@@ -229,16 +227,17 @@ export class ReaderView extends React.Component<ReaderProps, ReaderState> {
       collectionID,
       collection,
       newAnnotationProps,
-      currentId,
+      currentAnnotation,
       x,
       y
     } = this.state;
     console.log(collectionID, collection);
+    console.log(currentAnnotation);
     return (
       <ReaderContainer>
         <div>
-          {currentId.length > 0 &&
-            <TextAnnotation content={currentId} x={x} y={y} />}
+          {currentAnnotation != undefined &&
+            <AnnotationView x={x} y={y} annotation={currentAnnotation} />}
           <Link to="/">
             <i className="fa fa-arrow-left fa-3x" />
           </Link>

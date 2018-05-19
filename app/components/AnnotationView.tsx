@@ -1,11 +1,12 @@
 import * as React from "react";
 
 import styled from "styled-components";
+import {Annotation} from "../backend";
 
 type Props = {
-    content: string;
     x: number;
     y: number;
+    annotation: Annotation;
 }
 
 type TextStyleProps = {
@@ -13,14 +14,22 @@ type TextStyleProps = {
     y: number;
 }
 
-export default class Text extends React.Component<Props, any> {
+export default class AnnotationView extends React.Component<Props, any> {
+
+    renderContentType = (annotation: Annotation) =>  {
+        switch (annotation.type) {
+
+            case "image": return <img src={annotation.resource}/>;
+            default: return <p>{annotation.resource}</p>;
+
+        }
+    };
 
   render() {
-    const {content, x, y} = this.props;
-
+    const {x, y, annotation} = this.props;
     return (
         <TextStyle x = {x} y = {y}>
-            <p>{content}</p>
+            {this.renderContentType(annotation)}
         </TextStyle>
     );
   }
