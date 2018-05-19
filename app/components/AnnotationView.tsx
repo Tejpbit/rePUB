@@ -19,7 +19,7 @@ export default class AnnotationView extends React.Component<Props, any> {
     renderContentType = (annotation: Annotation) =>  {
         switch (annotation.type) {
 
-            case "image": return <img src={annotation.resource}/>;
+            case "image": return <img src={annotation.resource} width="300px" />;
             default: return <p>{annotation.resource}</p>;
 
         }
