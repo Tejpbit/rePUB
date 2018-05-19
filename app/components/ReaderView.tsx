@@ -65,7 +65,7 @@ class ReaderView extends React.Component<ReaderProps, ReaderState> {
 
     const cfiBase: string = contents.cfiBase;
 
-    this.divvifyContent(contents.content);
+    this.divvifyContent(contents.content, cfiBase);
 
     for (let annotation of annotations) {
       const epubcifiParse = this.parseEpubcfiToData(
@@ -86,8 +86,10 @@ class ReaderView extends React.Component<ReaderProps, ReaderState> {
     content: Node
   ): EpubcifiParse | null => {
     if (epubcifi.includes(cfiBase)) {
-      const loc: string = epubcifi.replace(cfiBase + "!", "");
-      const indicies: string[] = loc.split("/");
+      const loc: string = epubcifi.replace(cfiBase, "");
+      const indicies: string[] = loc
+        .split("/")
+        .filter(s => s !== "" && s !== "!");
 
       let currentNode: Node = content;
       for (let i = 0; i < indicies.length - 1; i++) {
@@ -123,27 +125,31 @@ class ReaderView extends React.Component<ReaderProps, ReaderState> {
     annotationChild.onpointerenter = () => this.onHover(id);
   };
 
-  divvifyContent = (node: Node): void => {
+  divvifyContent = (node: Node, cfi: string): void => {
     for (let i = 0; i < node.childNodes.length; i++) {
       const childNode = node.childNodes[i];
+      const newCfi = cfi + "/" + i;
       if (childNode.nodeName === "#text") {
-        this.divvifyText(childNode, node);
+        this.divvifyText(childNode, node, newCfi);
       } else {
-        this.divvifyContent(childNode);
+        this.divvifyContent(childNode, newCfi);
       }
     }
   };
 
-  divvifyText = (node: Node, parent: Node): void => {
+  divvifyText = (node: Node, parent: Node, cfi: string): void => {
     let newNode: Node = document.createElement("div");
     const data = node.nodeValue;
     if (data === null) {
       return;
     }
     const words = data.split(" ");
-    for (let word of words) {
+    for (let i = 0; i < words.length; i++) {
+      const wordCfi = cfi + "/" + i;
+      const word = words[i];
       let childNode: Element = document.createElement("div");
-      childNode.setAttribute("style", "display: inline");
+      childNode.setAttribute("style", "display: inline; cusror: pointer;");
+      childNode.onpointerdown = () => this.onNewAnnotation(wordCfi, word);
       childNode.innerHTML = word + " ";
       newNode.appendChild(childNode);
     }
