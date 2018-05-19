@@ -34,7 +34,8 @@
     "app/**/*.tsx",
     "test/**/*.ts",
     "test/**/*.tsx",
-    "node_modules/@types/**/*.d.ts"
+    "node_modules/@types/**/*.d.ts",
+    "npm.d.ts"
   ],
   "exclude": [
     "dist"
