@@ -1,9 +1,9 @@
 import * as React from "react";
-import {Link} from "react-router-dom";
-import {Full} from "../containers/HomePage";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { ReactReader, ReactReaderStyle } from "react-reader";
 import { Annotation } from "../backend";
+import { NewAnnotationView } from "./NewAnnotationView";
 
 import TextAnnotation from "./Text";
 
@@ -14,15 +14,22 @@ type ReaderState = {
   currentId: string;
   x: number;
   y: number;
+  createNewAnnotation: boolean;
+  newAnnotationProps: NewAnnotationProps;
+};
+
+type NewAnnotationProps = {
+  location: string;
+  word: string;
 };
 
 function getCollectionId(): any {
-  let lastSlash = window.location.href.lastIndexOf('/');
+  var lastSlash = window.location.href.lastIndexOf("/");
   if (lastSlash == -1) {
-    return null
+    return null;
   }
 
-  return window.location.href.substr(lastSlash+1);
+  return window.location.href.substr(lastSlash + 1);
 }
 
 type ReaderProps = {
@@ -34,18 +41,17 @@ type EpubcifiParse = {
   wordIndex: number;
 };
 
-
-export default class ReaderView extends React.Component<ReaderProps, ReaderState> {
+export class ReaderView extends React.Component<ReaderProps, ReaderState> {
   state: ReaderState = {
     path: "../Harry_Potter_and_the_Sorcerers_Stone-Rowling.epub",
     location: "epubcfi(/6/14[text6]!/4/4/1:0)", // epubcfi(/6/2[cover]!/4/1:0)",
     collectionID: getCollectionId(),
     currentId: "",
     x: 0,
-    y: 0
+    y: 0,
+    createNewAnnotation: false,
+    newAnnotationProps: { location: "", word: "" }
   };
-
-
 
   updateLocation = (epubcifi: string): void => {
     this.setState({ location: epubcifi });
@@ -56,13 +62,19 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
   };
 
   onHover = (id: string, event: PointerEvent): void => {
-    this.setState({currentId: id, x: event.pageX + 55, y: event.pageY + 70});
+    this.setState({ currentId: id, x: event.pageX + 55, y: event.pageY + 70 });
     console.log(id);
   };
 
   onNewAnnotation = (wordCfi: string, word: string) => {
-    console.log(wordCfi);
-    console.log(word);
+    const newAnnotationProps = {
+      location: wordCfi,
+      word
+    };
+    this.setState({
+      newAnnotationProps: newAnnotationProps,
+      createNewAnnotation: true
+    });
   };
 
   updateAnnotations = (contents: any, view: any): void => {
@@ -139,7 +151,9 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
       "display: inline; background: #dccccc; cursor: pointer;"
     );
     annotationChild.onpointerenter = (event: any) => this.onHover(id, event);
-    annotationChild.onpointerleave = () => {this.setState({currentId: "", x: 0, y: 0})};
+    annotationChild.onpointerleave = () => {
+      this.setState({ currentId: "", x: 0, y: 0 });
+    };
   };
 
   divvifyContent = (node: Node, cfi: string): void => {
@@ -175,32 +189,60 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
   };
 
   render() {
-    const { path, location, currentId, x, y} = this.state;
-      return (
-      <Full>
-          {currentId.length > 0 && <TextAnnotation id = {currentId } x = {x} y = {y}/>}
-        <Link to="/">
-          <i className="fa fa-arrow-left fa-3x" />
-        </Link>
-        <ContentView>
-          <ReactReader
-            url={path}
-            location={location}
-            styles={ReactReaderStyle}
-            locationChanged={(epubcifi: string) =>
-              this.updateLocation(epubcifi)}
-            getRendition={(rendition: any) => this.renditionLoaded(rendition)}
-          />
-        </ContentView>
-      </Full>
+    const {
+      path,
+      location,
+      collectionID,
+      createNewAnnotation,
+      newAnnotationProps,
+      currentId,
+      x,
+      y
+    } = this.state;
+    console.log(collectionID);
+    return (
+      <ReaderContainer>
+        <div>
+          {currentId.length > 0 &&
+            <TextAnnotation id={currentId} x={x} y={y} />}
+          <Link to="/">
+            <i className="fa fa-arrow-left fa-3x" />
+          </Link>
+          <ContentView>
+            <ReactReader
+              url={path}
+              location={location}
+              styles={ReactReaderStyle}
+              locationChanged={(epubcifi: string) =>
+                this.updateLocation(epubcifi)}
+              getRendition={(rendition: any) => this.renditionLoaded(rendition)}
+            />
+          </ContentView>
+        </div>
+        {createNewAnnotation
+          ? <NewAnnotationView
+              location={newAnnotationProps.location}
+              word={newAnnotationProps.word}
+            />
+          : ""}
+      </ReaderContainer>
     );
   }
 }
 
+export default ReaderView;
+
+const ReaderContainer = styled.div`
+  display: flex;
+  flex-flow: row;
+  height: 100%;
+  width: 50em;
+`;
+
 const ContentView = styled.div`
   background: white;
   color: black;
-  width: 30em;
+  width: 60em;
   height: 100%;
   position: relative;
 `;
