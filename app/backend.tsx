@@ -1,4 +1,4 @@
-import { dispatchActionFromTopic } from "./actions/helpers";
+import { updateCollections } from "./actions/collections";
 import conf from "./config.js";
 //import { toast } from "react-toastify";
 
@@ -26,8 +26,7 @@ export default class Backend {
     getAllCollections = () => {
         return this.fetchJson("/collections")
             .then((resp: Collection[]) => {
-
-                console.log(resp);
+                updateCollections(resp);
 
         })
     };

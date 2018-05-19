@@ -2,6 +2,8 @@ import * as React from "react";
 import { ReactReader } from "react-reader";
 
 import styled from "styled-components";
+import {Link} from "react-router-dom";
+import {Full} from "../containers/HomePage";
 
 type State = {
   path: string;
@@ -30,14 +32,19 @@ export default class ReaderView extends React.Component {
     const { path, location } = this.state;
 
     return (
-      <ContentView>
-        <ReactReader
-          url={path}
-          location={location}
-          locationChanged={(epubcifi: string) => this.updateLocation(epubcifi)}
-          getRendition={(rendition: any) => this.renditionLoaded(rendition)}
-        />
-      </ContentView>
+      <Full>
+        <Link to="/">
+            <i className="fa fa-arrow-left fa-3x" />
+        </Link>
+        <ContentView>
+          <ReactReader
+            url={path}
+            location={location}
+            locationChanged={(epubcifi: string) => this.updateLocation(epubcifi)}
+            getRendition={(rendition: any) => this.renditionLoaded(rendition)}
+          />
+        </ContentView>
+      </Full>
     );
   }
 }
