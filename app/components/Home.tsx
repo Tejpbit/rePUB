@@ -1,10 +1,12 @@
 import * as React from "react";
 import {Link} from "react-router-dom";
 import {Collection} from "../backend";
+import {BookEntry} from "../containers/HomePage";
 
 
 type Props = {
-    collections: Collection[]
+    collections: Collection[],
+    books: BookEntry[]
 }
 
 export default class Home extends React.Component<Props> {
