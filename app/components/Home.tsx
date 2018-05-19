@@ -2,6 +2,7 @@ import * as React from "react";
 import {Link} from "react-router-dom";
 import {Collection} from "../backend";
 import {BookEntry} from "../containers/HomePage";
+import styled from "styled-components";
 
 
 type Props = {
@@ -21,9 +22,9 @@ export default class Home extends React.Component<Props> {
     };
 
     renderCollection = (collection: Collection) => {
-        return <div key={collection.id} onClick={this.selectCollection}>
+        return <Link to={`/readerView/${collection.id}`} key={collection.id} onClick={this.selectCollection}>
             {collection.title}
-        </div>
+        </Link>
     };
 
 
@@ -31,14 +32,41 @@ export default class Home extends React.Component<Props> {
     const {collections} = this.props;
 
     return (
-      <div>
-          <div>
-          <h2>Home</h2>
-          <Link to="/counter">to Counter</Link>
-          <Link to="/readerView">to ReaderView</Link>
-            {collections.map(this.renderCollection)}
-        </div>
-      </div>
+        <ContainerDiv>
+          <CenterDiv>
+              <Title>rePUB</Title>
+              <h2>Your collections</h2>
+              <CollectionsList>
+                  {collections.map(this.renderCollection)}
+              </CollectionsList>
+
+          </CenterDiv>
+        </ContainerDiv>
     );
   }
 }
+
+const ContainerDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`;
+
+const CenterDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+`;
+
+
+const Title = styled.h1`
+    font-size: 7em;
+`;
+
+
+const CollectionsList = styled.div`
+    margin-left: 1em;
+    display: flex;
+    flex-direction: column;
+`;
