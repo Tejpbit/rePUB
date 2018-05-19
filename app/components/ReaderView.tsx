@@ -5,10 +5,15 @@ import styled from "styled-components";
 import { ReactReader, ReactReaderStyle } from "react-reader";
 import { Annotation } from "../backend";
 
+import TextAnnotation from "./Text";
+
 type ReaderState = {
   path: string;
   location: string;
   collectionID?: string;
+  currentId: string;
+  x: number;
+  y: number;
 };
 
 function getCollectionId(): any {
@@ -34,7 +39,10 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
   state: ReaderState = {
     path: "../Harry_Potter_and_the_Sorcerers_Stone-Rowling.epub",
     location: "epubcfi(/6/14[text6]!/4/4/1:0)", // epubcfi(/6/2[cover]!/4/1:0)",
-    collectionID: getCollectionId()
+    collectionID: getCollectionId(),
+    currentId: "",
+    x: 0,
+    y: 0
   };
 
 
@@ -47,7 +55,8 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
     rendition.hooks.content.register(this.updateAnnotations);
   };
 
-  onHover = (id: string): void => {
+  onHover = (id: string, event: PointerEvent): void => {
+    this.setState({currentId: id, x: event.pageX + 55, y: event.pageY + 70});
     console.log(id);
   };
 
@@ -122,7 +131,8 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
       "style",
       "display: inline; background: #dccccc; cursor: pointer;"
     );
-    annotationChild.onpointerenter = () => this.onHover(id);
+    annotationChild.onpointerenter = (event: any) => this.onHover(id, event);
+    annotationChild.onpointerleave = () => {this.setState({currentId: "", x: 0, y: 0})};
   };
 
   divvifyContent = (node: Node): void => {
@@ -163,10 +173,11 @@ export default class ReaderView extends React.Component<ReaderProps, ReaderState
     };
     ReactReaderStyle["height"] = "5em";
 
-    const { path, location, collectionID } = this.state;
     console.log(collectionID);
+    const { path, location, collectionID, currentId, x, y} = this.state;
     return (
       <Full>
+          {currentId.length > 0 && <TextAnnotation id = {currentId } x = {x} y = {y}/>}
         <Link to="/">
             <i className="fa fa-arrow-left fa-3x" />
         </Link>

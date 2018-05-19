@@ -8,7 +8,14 @@ type State = {
 };
 
 type Props = {
-    id: string
+    id: string;
+    x: number;
+    y: number;
+}
+
+type TextStyleProps = {
+    x: number;
+    y: number;
 }
 
 export default class Text extends React.Component<Props, any> {
@@ -21,7 +28,7 @@ export default class Text extends React.Component<Props, any> {
         super(props);
         this.state = {
             id: props.id,
-            content: "Hello I am text annotation, pleased to meet you."
+            content: "Interesting information goes here."
         }
     }
 
@@ -32,23 +39,30 @@ export default class Text extends React.Component<Props, any> {
 
   render() {
     const { content } = this.state;
+    const {x, y} = this.props;
 
     return (
-        <TextStyle>
+        <TextStyle x = {x} y = {y}>
             <p>{content}</p>
         </TextStyle>
     );
   }
 }
 
+
+
 const TextStyle = styled.div`
     position: absolute;
+    color: black;
     z-index: 3;
     margin-left: 20px;
     padding-left: 10px;
+    padding-right: 10px;
     border-radius: 12px;
     box-shadow: 4px 4px 5px 0px rgba(50, 50, 50, 0.75);
     background: #e3f4e3;
+    left:  ${(props: TextStyleProps) => props.x}px;
+    top: ${(props: TextStyleProps)=> props.y}px;
 
     &:after {
 	content: '';
@@ -63,5 +77,6 @@ const TextStyle = styled.div`
 	border-top: 0;
 	margin-top: -10px;
 	margin-left: -20px;
+	
 }
 `;
