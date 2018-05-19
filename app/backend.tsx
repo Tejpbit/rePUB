@@ -12,14 +12,10 @@ export type Annotation = {
     type: string;
     resource: string;
     location: {
-        start: EpubCFI;
-        end: EpubCFI;
+        start: string;
+        end: string;
     }
 };
-
-export type EpubCFI = {
-
-}
 
 class Backend {
 
